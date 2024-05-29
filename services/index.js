@@ -40,7 +40,21 @@ class voteService {
 
         return res
     };
-
+    getAllParties() {
+        try {
+            const items = fs.readdirSync(baseDir);
+            const filenames = []
+            // Filter out directories and return only file names
+             items.forEach(item => {
+                const files = path.parse(item).name
+              filenames.push(files);
+            });
+            return  filenames;
+        } catch (err) {
+            console.error('Error reading folder:', err);
+            return [];
+        }
+    }
     getAllVotes () {
         const filesContents = [];
         const files  = this.readDirectory();
@@ -106,7 +120,7 @@ class voteService {
                     const fileContent = fs.readFileSync(filepath, 'utf-8');
                     const file_json = JSON.parse(fileContent);
                     if (file_json.vote !== undefined) {
-                        leaderboard.push({ file: item, vote: file_json.vote });
+                        leaderboard.push({ file: item, candidate_name:file_json.candidate_name,vote: file_json.vote });
                     }
            
         });
@@ -114,7 +128,7 @@ class voteService {
         leaderboard.sort((a, b) => b.vote - a.vote);
 
         leaderboard.forEach(entry => {
-            result += `${entry.file}: ${entry.vote} votes \r\n`;
+            result += `${entry.file}: ${entry.candidate_name} ${entry.vote} votes \r\n`;
         });
         return result;
     }

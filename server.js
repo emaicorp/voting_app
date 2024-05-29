@@ -16,13 +16,18 @@ const server = http.createServer(function(req, res){
                 vote: result.vote
             
             }
+            if(result.candidate_name == "" || result.vote == ""){
+                res.writeHead(400, {"Content-Type": "text/plain"});
+                res.end("Bad Request : All Fields required");
+                return;
+            }
             const response = voting.createVote(`${result.name}.json`, JSON.stringify(vote))
             res.writeHead(200, {"Content-Type": "text/plain"});
             res.end(response)
         })
     }
     else if(req.method === 'GET' && req.url === '/getAllParties'){
-        const files = voting.readDirectory();      
+        const files = voting.getAllParties();      
         res.writeHead(200, {"Content-Type": "application/json"})
         res.end(JSON.stringify({
             Parties: files
